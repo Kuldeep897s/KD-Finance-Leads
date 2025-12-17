@@ -1,15 +1,16 @@
+
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KD Finance Services - Health Insurance</title>
+<title>KD Finance Services</title>
 
 <style>
 body{
   margin:0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
   color:#fff;
 }
 .container{
@@ -19,10 +20,8 @@ body{
   padding:25px;
   border-radius:20px;
 }
-h2{
-  text-align:center;
-}
-input, button{
+h2{text-align:center;}
+input,select,button{
   width:100%;
   padding:12px;
   margin-top:12px;
@@ -30,12 +29,9 @@ input, button{
   border:none;
   font-size:16px;
 }
-input{
-  background:#fff;
-}
+input,select{background:#fff;}
 button{
   background:#ff9800;
-  color:#000;
   font-weight:bold;
   cursor:pointer;
 }
@@ -51,20 +47,23 @@ button{
 
 <div class="container">
   <h2>KD Finance Services</h2>
-  <p class="small">Free Health Insurance Consultation</p>
+  <p class="small">Free Financial Consultation</p>
 
   <form id="leadForm">
 
     <input type="text" id="name" placeholder="पूरा नाम" required>
-
     <input type="number" id="age" placeholder="उम्र" required>
-
     <input type="text" id="city" placeholder="शहर" required>
-
     <input type="tel" id="mobile" placeholder="मोबाइल नंबर" required>
 
-    <button type="submit">Get Free Consultation</button>
+    <select id="product" required>
+      <option value="">सेवा चुनें</option>
+      <option value="Health Insurance">Health Insurance</option>
+      <option value="Term Insurance">Term Insurance</option>
+      <option value="Loan">Loan</option>
+    </select>
 
+    <button type="submit">Get Free Consultation</button>
   </form>
 
   <p class="small">100% Secure | IRDAI Approved Partners</p>
@@ -74,47 +73,24 @@ button{
 document.getElementById("leadForm").addEventListener("submit", function(e){
   e.preventDefault();
 
-  var name = document.getElementById("name").value;
-  var age = document.getElementById("age").value;
-  var city = document.getElementById("city").value;
-  var mobile = document.getElementById("mobile").value;
-
-  var sendData = {
-    name: name,
-    age: age,
-    city: city,
-    mobile: mobile,
-    product: "Health Insurance"
-  };
+  var formData = new FormData();
+  formData.append("name", document.getElementById("name").value);
+  formData.append("age", document.getElementById("age").value);
+  formData.append("city", document.getElementById("city").value);
+  formData.append("mobile", document.getElementById("mobile").value);
+  formData.append("product", document.getElementById("product").value);
 
   fetch("https://script.google.com/macros/s/AKfycbxRFRWb9m6w2tsmiyff3RhNHQ_AQkDrIUv4usZDv_CychPfgR79OpezscVmBq9e87cXwQ/exec", {
     method: "POST",
-    body: JSON.stringify(sendData),
-    headers: {
-      "Content-Type": "application/json"
-    }
+    body: formData
   })
-  .then(response => response.json())
+  .then(res => res.json())
   .then(data => {
-
-    var message =
-`Hello KD Finance Services 👋
-Name: ${name}
-Age: ${age}
-City: ${city}
-Mobile: ${mobile}
-Interested in Health Insurance`;
-
-    window.open(
-      "https://wa.me/916397059271?text=" + encodeURIComponent(message),
-      "_blank"
-    );
-
+    window.open(data.whatsapp, "_blank");
     alert("✅ Details submitted successfully!");
     document.getElementById("leadForm").reset();
-
   })
-  .catch(error => {
+  .catch(() => {
     alert("❌ Error! Please try again.");
   });
 });
