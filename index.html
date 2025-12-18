@@ -2,98 +2,224 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KD Finance Services</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KD Finance Services | Kuldeep</title>
 
 <style>
 body{
   margin:0;
-  font-family:Arial,sans-serif;
+  font-family:Arial, sans-serif;
   background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
   color:#fff;
 }
-.container{
-  max-width:420px;
-  margin:50px auto;
-  background:rgba(255,255,255,0.12);
-  padding:25px;
-  border-radius:20px;
+.wrapper{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:12px;
 }
-h2{text-align:center;}
+.box{
+  width:100%;
+  max-width:380px;
+  background:#1f3a44;
+  padding:22px;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,.4);
+}
+h2{text-align:center;margin:0;}
+p{text-align:center;font-size:13px;margin:6px 0 16px;color:#d9f1ff;}
+
 input,select,button{
   width:100%;
   padding:12px;
-  margin-top:12px;
+  margin-top:10px;
+  font-size:15px;
   border-radius:10px;
   border:none;
-  font-size:16px;
 }
 input,select{background:#fff;}
 button{
   background:#ff9800;
   font-weight:bold;
   cursor:pointer;
+  position:relative;
+  overflow:hidden;
 }
-.small{
-  font-size:13px;
+
+/* Spinner */
+.spinner{
+  display:none;
+  width:20px;
+  height:20px;
+  border:3px solid #fff;
+  border-top-color:transparent;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg);}}
+
+/* Popup */
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+.popup-box{
+  background:#fff;
+  color:#000;
+  padding:22px;
+  border-radius:14px;
+  width:90%;
+  max-width:320px;
   text-align:center;
-  margin-top:15px;
+  animation:pop .4s ease;
 }
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.popup-box h3{margin:0 0 8px;color:#28a745;}
+.popup-box p{font-size:14px;}
+
+.footer{
+  text-align:center;
+  font-size:12px;
+  margin-top:14px;
+  color:#ccefff;
+}
+
+/* Sticky buttons */
+.sticky{
+  position:fixed;
+  right:12px;
+  bottom:15px;
+  z-index:1000;
+}
+.sticky a{
+  display:block;
+  margin-top:8px;
+  padding:12px 18px;
+  border-radius:40px;
+  color:#fff;
+  text-decoration:none;
+  font-weight:bold;
+}
+.whatsapp{background:#25D366;}
+.call{background:#ff9800;color:#000;}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h2>KD Finance Services</h2>
-  <p class="small">Free Financial Consultation</p>
+<div class="wrapper">
+  <div class="box">
+    <h2>KD Finance Services</h2>
+    <p>Trusted Financial Guidance by <b>Kuldeep</b></p>
 
-  <form id="leadForm">
+    <form id="leadForm">
+      <input type="text" name="name" placeholder="पूरा नाम" required>
+      <input type="number" name="age" placeholder="उम्र" min="18" required>
+      <input type="text" name="city" placeholder="शहर" required>
+      <input type="tel" name="mobile" placeholder="मोबाइल नंबर" pattern="[0-9]{10}" required>
 
-    <input type="text" id="name" placeholder="पूरा नाम" required>
-    <input type="number" id="age" placeholder="उम्र" required>
-    <input type="text" id="city" placeholder="शहर" required>
-    <input type="tel" id="mobile" placeholder="मोबाइल नंबर" required>
+      <select name="product" required>
+        <option value="">सेवा चुनें</option>
+        <option value="Health Insurance">Health Insurance</option>
+        <option value="Term Insurance">Term Insurance</option>
+        <option value="Loan">Loan</option>
+      </select>
 
-    <select id="product" required>
-      <option value="">सेवा चुनें</option>
-      <option value="Health Insurance">Health Insurance</option>
-      <option value="Term Insurance">Term Insurance</option>
-      <option value="Loan">Loan</option>
-    </select>
+      <button id="submitBtn" type="submit">
+        <span class="btn-text">Free Consultation</span>
+        <span class="spinner"></span>
+      </button>
+    </form>
 
-    <button type="submit">Get Free Consultation</button>
-  </form>
+    <div class="footer">
+      🔒 100% Secure | IRDAI Partners
+    </div>
+  </div>
+</div>
 
-  <p class="small">100% Secure | IRDAI Approved Partners</p>
+<!-- Popup -->
+<div class="popup" id="popup">
+  <div class="popup-box">
+    <h3>✅ Submitted!</h3>
+    <p>Kuldeep will contact you shortly.</p>
+  </div>
+</div>
+
+<!-- Sticky Buttons -->
+<div class="sticky">
+  <a class="whatsapp" href="https://wa.me/916397059271" target="_blank">💬 WhatsApp</a>
+  <a class="call" href="tel:916397059271">📞 Call Now</a>
 </div>
 
 <script>
-document.getElementById("leadForm").addEventListener("submit", function(e){
+const form = document.getElementById("leadForm");
+const btn = document.getElementById("submitBtn");
+const spinner = btn.querySelector(".spinner");
+const btnText = btn.querySelector(".btn-text");
+const popup = document.getElementById("popup");
+
+// fake numbers block
+const fakeNumbers = ["0000000000","1111111111","1234567890","9999999999"];
+
+form.addEventListener("submit", function(e){
   e.preventDefault();
 
-  var formData = new FormData();
-  formData.append("name", document.getElementById("name").value);
-  formData.append("age", document.getElementById("age").value);
-  formData.append("city", document.getElementById("city").value);
-  formData.append("mobile", document.getElementById("mobile").value);
-  formData.append("product", document.getElementById("product").value);
+  const formData = new FormData(form);
+  const mobile = formData.get("mobile");
 
-  fetch("https://script.google.com/macros/s/AKfycbyy5I1GrZvViez47CDae89vFKYDlFeRn2DrigNqdCEeRb80tUv2AZAyoRoboA2zUtiT/exec", {
-    method: "POST",
-    body: formData
+  if(fakeNumbers.includes(mobile)){
+    alert("❌ Invalid Mobile Number");
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.style.visibility = "hidden";
+  spinner.style.display = "block";
+
+  fetch("https://script.google.com/macros/s/AKfycbyy5I1GrZvViez47CDae89vFKYDlFeRn2DrigNqdCEeRb80tUv2AZAyoRoboA2zUtiT/exec",{
+    method:"POST",
+    body:formData
   })
   .then(res => res.json())
   .then(data => {
-    window.open(data.whatsapp, "_blank");
-    alert("✅ Details submitted successfully!");
-    document.getElementById("leadForm").reset();
+
+    spinner.style.display = "none";
+    btnText.style.visibility = "visible";
+    btn.disabled = false;
+
+    if(data.status === "duplicate"){
+      alert("⚠️ This mobile number is already registered");
+      return;
+    }
+
+    if(data.status === "success"){
+      popup.style.display = "flex";
+      setTimeout(()=>{
+        popup.style.display = "none";
+        window.open(data.whatsapp,"_blank");
+        form.reset();
+      },1800);
+    }
   })
-  .catch(() => {
-    alert("❌ Error! Please try again.");
+  .catch(()=>{
+    alert("❌ Server error. Try again");
+    spinner.style.display="none";
+    btnText.style.visibility="visible";
+    btn.disabled=false;
   });
 });
 </script>
 
 </body>
 </html>
+
